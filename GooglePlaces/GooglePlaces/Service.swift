@@ -17,29 +17,27 @@ struct Service {
     fileprivate let tron = TRON(baseURL: Config.baseURL)
     
     //MARK: - Fetch Google Places from Search String
-    func fetchGooglePlaces(forSearchString searchString: String, completion : @escaping (PlacesDataSource) -> ()){
+    func fetchGooglePlaces(forSearchString searchString: String, completion : @escaping (PlacesDataSource?, Error?) -> ()){
         let request : APIRequest<PlacesDataSource, JSONError> = tron.request("/autocomplete/json")
         
         request.parameters = ["input":searchString, "types": "(cities)","key":Config.GooglePlacesAPIKey]
         request.perform(withSuccess: { (placesDataSource) in
-            print("Received Data.")
-            completion(placesDataSource)
+            completion(placesDataSource, nil)
         }) { (err) in
-            print("Error receiving data \(err)")
+            completion(nil, err)
         }
         
     }
     
     //MARK: - Fetch Google Places details from place id
-    func fetchPlaceDetails(location placeId: String, completion : @escaping (PlaceDetailsDataSource) -> ()) {
+    func fetchPlaceDetails(location placeId: String, completion : @escaping (PlaceDetailsDataSource?, Error?) -> ()) {
         let request : APIRequest<PlaceDetailsDataSource, JSONError> = tron.request("/details/json")
         
         request.parameters = ["placeid":placeId, "key":Config.GooglePlacesAPIKey]
         request.perform(withSuccess: { (placesDetailsDataSource) in
-            print("Received Data. \(placesDetailsDataSource.placeDetail?.name)")
-            completion(placesDetailsDataSource)
+            completion(placesDetailsDataSource, nil)
         }) { (err) in
-            print("Error receiving data \(err)")
+            completion(nil, err)
         }
     }
 

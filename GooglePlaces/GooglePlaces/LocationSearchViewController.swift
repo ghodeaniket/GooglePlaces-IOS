@@ -13,6 +13,7 @@ class LocationSearchViewController : UIViewController, UISearchResultsUpdating, 
     
     // MARK: - Properties
     fileprivate let reuseIdentifier = "Place"
+    fileprivate let segueIdentifier = "ShowLocationDetails"
     @IBOutlet weak var tableView: UITableView!
     var searchController:UISearchController!
     var places = [Place]()
@@ -34,8 +35,13 @@ class LocationSearchViewController : UIViewController, UISearchResultsUpdating, 
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text {
             if searchText.characters.count >= 3 {
-                Service.sharedInstance.fetchGooglePlaces(forSearchString: searchText, completion: { (placesDataSource) in
-                    self.places = placesDataSource.places
+                // Fetch Google places for entered search text
+                Service.sharedInstance.fetchGooglePlaces(forSearchString: searchText, completion: { (placeDataSource, err) in
+                    if let err = err {
+                        print("Error while fetching the places ",err)
+                        return
+                    }
+                    self.places = placeDataSource!.places
                     self.tableView.reloadData()
                 })
             }
@@ -44,7 +50,7 @@ class LocationSearchViewController : UIViewController, UISearchResultsUpdating, 
     
     // MARK: - Navigation - PrepareForSegue Method
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ShowLocationDetails" {
+        if segue.identifier == self.segueIdentifier {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let destinationController = segue.destination as! LocationDetailsViewController
                 destinationController.selectedPlace = self.places[indexPath.row]

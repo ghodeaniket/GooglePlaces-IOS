@@ -12,19 +12,23 @@ import SwiftyJSON
 
 class PlacesDataSource : NSObject, JSONDecodable{
     
+    enum PlaceKeys : String{
+        case predictions = "predictions"
+        case description = "description"
+        case placeId = "place_id"
+    }
+    
     var places : [Place]
     
     required init(json: JSON) throws {
-        print("JSON Serialization completed \(json)")
         places = [Place]()
-        if let array = json["predictions"].array {
+        if let array = json[PlaceKeys.predictions.rawValue].array {
             for placeJson in array {
-                let name = placeJson["description"].stringValue
-                let placeID = placeJson["place_id"].stringValue
+                let name = placeJson[PlaceKeys.description.rawValue].stringValue
+                let placeID = placeJson[PlaceKeys.placeId.rawValue].stringValue
                 let placeFound = Place(name: name, placeId: placeID, googlePhotoURLs: [], longitude: 0.0, lattitude: 0.0)
                 places.append(placeFound)
             }
         }
-        print("PDS number of places \(places.count)")
     }
 }

@@ -13,7 +13,8 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
     
     // MARK: - Properties
     fileprivate let reuseIdentifier = "GooglePhoto"
-    fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
+    fileprivate let segueIdentifier = "ShowPhoto"
+    fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0) // adding border around photos at the bottom of the map
     fileprivate let itemsPerRow: CGFloat = 1 // Single Row Collection View
     var placeDetail : Place?
     var selectedPlace: Place?
@@ -23,8 +24,6 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var photosCollectionView: UICollectionView!
     
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         photosCollectionView.dataSource = self
@@ -32,8 +31,14 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
         
         
         if let selectedPlace = self.selectedPlace {
-            Service.sharedInstance.fetchPlaceDetails(location: selectedPlace.placeId) { (placedetailsDataSource) in
-                self.placeDetail = placedetailsDataSource.placeDetail
+            // Fetch details for selected place from previous screen.
+            Service.sharedInstance.fetchPlaceDetails(location: selectedPlace.placeId, completion: { (placeDetailsDataSource, err) in
+                if let err = err {
+                    print("Error fetching place details. ", err)
+                    return
+                }
+                
+                self.placeDetail = placeDetailsDataSource!.placeDetail
                 
                 // Check if PlaceDetails exist or return
                 guard let placeDetail = self.placeDetail else {
@@ -50,8 +55,7 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
                 
                 self.googlePhotoURLs = placeDetail.googlePhotoURLs
                 self.photosCollectionView.reloadData()
-                
-            }
+            })
         }
     }
 
@@ -62,6 +66,7 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
     
     // MARK: - UICollectionView DataSource Methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        // check if URLs for photo are present
         if let googlePhotoURLs = googlePhotoURLs
         {
             return googlePhotoURLs.count
@@ -73,15 +78,15 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         let imageView = cell.viewWithTag(1) as! UIImageView
         if let googlePhotoURLs = googlePhotoURLs {
+            // SDWebImage provides way to put placeholder image until the image is downloaded asynchronously.
             imageView.sd_setImage(with: URL(string: googlePhotoURLs[indexPath.row]), placeholderImage: #imageLiteral(resourceName: "placeholder"))
         }
-        
         return cell
     }
     
     // MARK: - Navigation - PrepareForSegue Method
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ShowPhoto" {
+        if segue.identifier == self.segueIdentifier {
             if let indexPath = photosCollectionView.indexPathsForSelectedItems?.first {
                 let destinationController = segue.destination as! PhotoViewController
                 destinationController.googlePhotoURL = googlePhotoURLs?[indexPath.row]

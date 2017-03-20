@@ -9,6 +9,8 @@
 import Foundation
 import SwiftyJSON
 
+// Structure to store information/details for Google places
+
 struct Place {
     let name: String
     let placeId: String
