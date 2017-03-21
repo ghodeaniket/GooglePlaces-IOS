@@ -32,6 +32,7 @@ class LocationSearchViewController : UIViewController, UISearchResultsUpdating, 
         self.tableView.tableHeaderView = searchController.searchBar
     }
     
+    // MARK: - Search Controller Delegate Methods
     func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text {
             if searchText.characters.count >= 3 {
@@ -63,7 +64,7 @@ class LocationSearchViewController : UIViewController, UISearchResultsUpdating, 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return places.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
         cell.textLabel?.text = places[indexPath.row].name

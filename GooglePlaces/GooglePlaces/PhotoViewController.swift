@@ -15,6 +15,7 @@ class PhotoViewController: UIViewController {
     
     override func viewDidLoad() {        
         super.viewDidLoad()
+        
         // SDWebImage provides way to put placeholder image until the image is downloaded asynchronously.
         // When image is displayed it is cached automatically by SDWebImageView library
         self.imageView?.sd_setImage(with: URL(string: googlePhotoURL!), placeholderImage: #imageLiteral(resourceName: "placeholder"))

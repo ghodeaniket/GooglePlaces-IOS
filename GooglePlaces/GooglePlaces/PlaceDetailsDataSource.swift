@@ -12,6 +12,7 @@ import SwiftyJSON
 
 class PlaceDetailsDataSource: NSObject, JSONDecodable {
     
+    // Enum for Place Details keys
     enum PlaceDetails: String {
         case result = "result"
         case formattedAddress = "formatted_address"
@@ -21,6 +22,7 @@ class PlaceDetailsDataSource: NSObject, JSONDecodable {
         case lattitude = "lat"
     }
     
+    // Enum for Google Photos keys
     enum GooglePhoto: String {
         case width = "width"
         case photoReference = "photo_reference"
@@ -30,11 +32,16 @@ class PlaceDetailsDataSource: NSObject, JSONDecodable {
     fileprivate let photoBaseURL = "https://maps.googleapis.com/maps/api/place/photo"
     var placeDetail : Place?
     var googlePhotoURLs : [String]?
+    
+    // Init Method
     required init(json: JSON) throws {
         super.init()
         var longitude: Double?
         var lattitude: Double?
         var name: String?
+        
+        // Parse details for Selected location from JSON
+        
         if let resultDictionary = json[PlaceDetails.result.rawValue].dictionary {
             name = resultDictionary[PlaceDetails.formattedAddress.rawValue]?.stringValue
             if let geometry = resultDictionary[PlaceDetails.geometry.rawValue]?.dictionary {

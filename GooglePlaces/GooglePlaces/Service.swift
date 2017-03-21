@@ -16,7 +16,9 @@ struct Service {
     static var sharedInstance = Service()
     fileprivate let tron = TRON(baseURL: Config.baseURL)
     
-    //MARK: - Fetch Google Places from Search String
+    
+    //MARK: - Methods
+    //Fetch Google Places from Search String
     func fetchGooglePlaces(forSearchString searchString: String, completion : @escaping (PlacesDataSource?, Error?) -> ()){
         let request : APIRequest<PlacesDataSource, JSONError> = tron.request("/autocomplete/json")
         
@@ -29,7 +31,7 @@ struct Service {
         
     }
     
-    //MARK: - Fetch Google Places details from place id
+    //Fetch Google Places details from place id
     func fetchPlaceDetails(location placeId: String, completion : @escaping (PlaceDetailsDataSource?, Error?) -> ()) {
         let request : APIRequest<PlaceDetailsDataSource, JSONError> = tron.request("/details/json")
         

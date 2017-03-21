@@ -12,6 +12,7 @@ import SwiftyJSON
 
 class PlacesDataSource : NSObject, JSONDecodable{
     
+    // Enum for basic Place information keys    
     enum PlaceKeys : String{
         case predictions = "predictions"
         case description = "description"

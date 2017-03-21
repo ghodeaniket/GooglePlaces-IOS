@@ -26,10 +26,12 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Setting the DataSource and Delegate for Collection view as LocationDetailsViewController
         photosCollectionView.dataSource = self
         photosCollectionView.delegate = self
         
-        
+        // Check if selected place is not nil
         if let selectedPlace = self.selectedPlace {
             // Fetch details for selected place from previous screen.
             Service.sharedInstance.fetchPlaceDetails(location: selectedPlace.placeId, completion: { (placeDetailsDataSource, err) in
@@ -46,22 +48,26 @@ class LocationDetailsViewController: UIViewController, UICollectionViewDataSourc
                     return
                 }
                 
-                let annotation = MKPointAnnotation()
-                annotation.title = placeDetail.name
-                annotation.coordinate.latitude = placeDetail.lattitude
-                annotation.coordinate.longitude = placeDetail.longitude
-                self.mapView.showAnnotations([annotation], animated: true)
-                self.mapView.selectAnnotation(annotation, animated: true)
+                self.addMapAnnotations(placeDetail: placeDetail)
                 
+                // Set the datasource for PhotoCollectionView and reload the collection view
                 self.googlePhotoURLs = placeDetail.googlePhotoURLs
                 self.photosCollectionView.reloadData()
             })
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    //MARK: - Helper Methods
+    /*
+     Add Annotations/Pin to the map for selected place
+    */
+    func addMapAnnotations(placeDetail: Place) {
+        let annotation = MKPointAnnotation()
+        annotation.title = placeDetail.name
+        annotation.coordinate.latitude = placeDetail.lattitude
+        annotation.coordinate.longitude = placeDetail.longitude
+        self.mapView.showAnnotations([annotation], animated: true)
+        self.mapView.selectAnnotation(annotation, animated: true)
     }
     
     // MARK: - UICollectionView DataSource Methods
